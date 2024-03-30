@@ -14,6 +14,7 @@ import prettytable as pt # python -m pip install -U prettytable
 
 bot = telebot.TeleBot(os.environ.get('botID'))
 apiKey = os.environ.get('blablaApiKey')
+API_URL = 'https://public-api.blablacar.com/api/v3/trips'
 
 MONTH_MAP={'январь':'01', 'янв':'01', 'ферваль':'02', 'фев':'02', 'март':'03', 'мар':'03', 'апрель':'04', 'апр':'04', 'май':'05', 'июнь':'06', 'июль':'07', 'август':'08', 'авг':'08', 'сентябрь':'09',
     'сент':'09', 'октябрь':'10', 'окт':'10', 'ноябрь':'11', 'нояб':'11', 'декабрь':'12', 'дек':'12', 'january':'01', 'jan':'01', 'february':'02', 'feb':'02', 'march':'03', 'mar':'03', 'april':'04', 'apr':'04',
@@ -54,10 +55,9 @@ def getCoordinatesByName(name):
             CITY_COORD[name.lower()] = lat + ',' + lon
             print(CITY_COORD[name.lower()])
             return lat + ',' + lon
-        except:
+        except Exception as e:
+            print(e)
             return ''
-
-API_URL = 'https://public-api.blablacar.com/api/v3/trips'
 
 def getTripsData(apiKey, seats, fromName, toName, dateBegin, dateEnd, radius=10000):
     headers = {'accept': 'application/json', 'key': apiKey} 

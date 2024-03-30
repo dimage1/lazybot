@@ -1,0 +1,24 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: lazybot
+  labels:
+    app: lazybot
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: lazybot
+  template:
+    metadata:
+      labels:
+        app: lazybot
+    spec:
+      containers:
+      - name: lazybot
+        image: dimage1/lazybot:latest
+        envFrom:
+        - secretRef:
+            name: bot-id-secret
+        - secretRef:
+            name: blabla-api-secret
