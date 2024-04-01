@@ -1,0 +1,27 @@
+apiVersion: v1
+kind: Pod
+
+metadata:
+  name: ng-pod
+  labels:
+    app: ng
+
+spec:
+  containers:
+  - name: nginx-container
+    image: nginx
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ng-pod
+spec:
+  selector:
+    app: ng
+  ports:
+    - name: http
+      protocol: TCP
+      port: 80
+      targetPort: 80
+  type: LoadBalancer
