@@ -5,13 +5,13 @@ FROM python:3.9.13-slim-buster
 
 # create working directory and install pip dependencies
 WORKDIR /lazybot
-RUN pip install requests pyTelegramBotAPI timezonefinder prettytable
+RUN pip install requests pymongo[srv]
 
 # copy python project files from local to /lazybot image working directory
-COPY bot.py .
+COPY blablascan.py .
 ADD utils ./utils/
 ADD blabla ./blabla/
 
 # run server  
-CMD [ "python3", "bot.py"]
+CMD [ "python3", "blablascan.py"]
 

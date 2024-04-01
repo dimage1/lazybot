@@ -1,0 +1,21 @@
+apiVersion: batch/v1
+kind: CronJob
+
+metadata:
+  name: blablascan
+
+spec:
+  schedule: "0 * * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          restartPolicy: OnFailure
+          containers:
+          - name: blablascan
+            image: dimage1/blablascan:latest
+            envFrom:
+            - secretRef:
+                name: mongo-w-url
+            - secretRef:
+                name: blabla-api-secret

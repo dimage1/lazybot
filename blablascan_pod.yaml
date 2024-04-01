@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Pod
+
+metadata:
+  name: blablascanpod
+
+spec:
+  containers:
+  - name: blablascan
+    image: dimage1/blablascan:latest
+    envFrom:
+    - secretRef:
+        name: mongo-w-url
+    - secretRef:
+        name: blabla-api-secret
