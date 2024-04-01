@@ -9,6 +9,8 @@ RUN pip install pyTelegramBotAPI timezonefinder prettytable
 
 # copy python project files from local to /lazybot image working directory
 COPY bot.py .
+ADD utils ./utils/
+ADD blabla ./blabla/
 
 # run server  
 CMD [ "python3", "bot.py"]

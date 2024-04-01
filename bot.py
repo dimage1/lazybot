@@ -12,9 +12,11 @@ import os
 import copy
 import prettytable as pt # python -m pip install -U prettytable
 
+from utils.geo import loadCityCoordinates
+from blabla.carpooling import getTripsData
+
 bot = telebot.TeleBot(os.environ.get('botID'))
 apiKey = os.environ.get('blablaApiKey')
-API_URL = 'https://public-api.blablacar.com/api/v3/trips'
 
 MONTH_MAP={'январь':'01', 'янв':'01', 'ферваль':'02', 'фев':'02', 'март':'03', 'мар':'03', 'апрель':'04', 'апр':'04', 'май':'05', 'июнь':'06', 'июль':'07', 'август':'08', 'авг':'08', 'сентябрь':'09',
     'сент':'09', 'октябрь':'10', 'окт':'10', 'ноябрь':'11', 'нояб':'11', 'декабрь':'12', 'дек':'12', 'january':'01', 'jan':'01', 'february':'02', 'feb':'02', 'march':'03', 'mar':'03', 'april':'04', 'apr':'04',
@@ -24,16 +26,7 @@ MONTH_MAP_REVERSE={'01': 'Jan', '02': 'Feb', '03': 'Mar', '04': 'Apr', '05': 'Ma
 
 DAYS_IN_MONTH=[31, 29, 31, 30, 31, 30, 31, 31, 31, 30, 31, 30]
 
-CITY_COORD={'annecy': '45.9160,6.1330', 'a': '45.9160,6.1330', 'ann': '45.9160,6.1330', '.': '45.9160,6.1330',
-    'lyon': '45.764043,4.835659', 'paris': '48.8566,2.3522', 'nimes': '43.8380,4.3610',
-    'aix-les-bains': '45.6923,5.9090', 'aix': '45.6923,5.9090',
-    'rumilly': '45.8671,5.9424', 'albertville': '45.6755,6.3927', 'torino': '45.0703,7.6869', 'turin': '45.0703,7.6869',
-    'montpellier': '43.6108,3.8767', 'milan': '45.4642,9.1900', 'lausanne': '46.5197,6.6323', 'lau': '46.5197,6.6323',
-    'avignon': '43.5654,4.4832', 'grenoble': '45.1885,5.7245', 'toulouse': '43.6045,1.4440',
-    'antibes': '43.3580,7.6290', 'chamonix': '45.9237,6.8694', 'marseille': '43.2965,5.3698', 'cannes' : '43.5528,7.0174',
-    'barcelona': '41.3851,2.1734', 'nice': '43.7102,7.2620', 'le-grand-saconnex': '46.2332,6.1232', 'aeroport': '46.2332,6.1232', 'aero': '46.2332,6.1232', 'gva': '46.2332,6.1232', 'baar': '47.1954,8.5261',
-    'bonneville': '46.0775797,6.4086189', 'mont-blanc': '45.8327056,6.865170', 'мон-блан' : '45.8327056,6.865170', 
-    'питер':  '59.938732,30.316229', 'санкт-петербург':  '59.938732,30.316229', 'saint-petersburg':  '59.938732,30.316229'}
+CITY_COORD = loadCityCoordinates()
 
 tf = TimezoneFinder()  # reuse
 
@@ -58,29 +51,6 @@ def getCoordinatesByName(name):
         except Exception as e:
             print(e)
             return ''
-
-def getTripsData(apiKey, seats, fromName, toName, dateBegin, dateEnd, radius=10000):
-    headers = {'accept': 'application/json', 'key': apiKey} 
-    params = {'from_coordinate': fromName, 'requested_seats': seats, 'to_coordinate': toName, 'start_date_local': dateBegin, 'count' : 100, 'sort': 'departure_datetime:asc', 'currency' : 'EUR'}
-    if radius != 0: # default
-        params['radius_in_meters'] = radius
-    
-    if dateEnd != '':
-        params['end_date_local'] = dateEnd
-
-    #'end_date_local': '2021-04-20T05:55:00'}#, 'start_date_local': dateBegin} #'2021-03-20T05:55:00'}
-
-    print(params)
-    r = requests.get(API_URL, params=params, headers=headers)
-
-    try:
-        data  = r.json()
-        print(data)
-    except ValueError as err:
-        print(str(err))
-        sys.exit(2)
-
-    return data["trips"]
 
 def scanFromTo(apiKey, seats, dateBegin, dateEnd, fromName, toName, radius):
     fromName = getCoordinatesByName(fromName.lower())

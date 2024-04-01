@@ -231,6 +231,7 @@ AVR,,Vila Real,,41.299746,-7.749872,Europe/Lisbon,1
 AAM,,Amarante,,41.266060,-8.072211,Europe/Lisbon,1
 SEL,,Basel,,47.546101,7.589041,Europe/Zurich,1
 ZRC,,Zürich,,47.381190,8.537474,Europe/Zurich,1
+ZRC,,Zurich,,47.381190,8.537474,Europe/Zurich,1
 XMF,,Montbéliard,,47.508948,6.801954,Europe/Paris,1
 ABW,,Benidorm - Bus Station,,38.550283,-0.125306,Europe/Madrid,1
 ABZ,,Castellon,,39.988933,-0.051424,Europe/Madrid,1
