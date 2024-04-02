@@ -4,7 +4,10 @@ import random
 
 import datetime
 from datetime import datetime as dt
-from timezonefinder import TimezoneFinder
+#from timezonefinderL import TimezoneFinder -- 350MB
+from timezonefinderL import TimezoneFinder # -- 90MB, not so precise
+#from tzwhere import tzwhere -- does not work with latest numpy
+
 import requests
 import json
 import time
@@ -29,6 +32,7 @@ DAYS_IN_MONTH=[31, 29, 31, 30, 31, 30, 31, 31, 31, 30, 31, 30]
 CITY_COORD = loadCityCoordinates()
 
 tf = TimezoneFinder()  # reuse
+#tzw = tzwhere.tzwhere()
 
 def getCoordinatesByName(name):
     try:
@@ -358,6 +362,7 @@ def getCityWeather(message, city):
     dayOfTheWeek = datetime.datetime.now().isoweekday() - 1
     print(dayOfTheWeek)
 
+    #tz = tzw.tzNameAt(float(longitude), float(latitude))
     tz = tf.timezone_at(lng=float(longitude), lat=float(latitude))
     print(tz)
 
@@ -396,6 +401,8 @@ def getCityWeatherOld(message, city, precise):
     dayOfTheWeek = datetime.datetime.now().isoweekday() - 1
     print(dayOfTheWeek)
 
+    
+    #tz = tzw.tzNameAt(float(longitude), float(latitude))
     tz = tf.timezone_at(lng=float(longitude), lat=float(latitude))
     print(tz)
 

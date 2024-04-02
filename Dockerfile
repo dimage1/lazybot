@@ -5,7 +5,9 @@ FROM python:3.9.13-slim-buster
 
 # create working directory and install pip dependencies
 WORKDIR /lazybot
-RUN pip install requests pyTelegramBotAPI timezonefinder prettytable
+RUN pip install requests prettytable
+RUN pip install pyTelegramBotAPI 
+RUN pip install timezonefinderL
 
 # copy python project files from local to /lazybot image working directory
 COPY bot.py .
