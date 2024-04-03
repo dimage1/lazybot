@@ -14,5 +14,5 @@ ADD utils ./utils/
 ADD blabla ./blabla/
 
 # run server  
-CMD [ "python3", "blablascan.py"]
+ENTRYPOINT [ "python3", "blablascan.py"]
 

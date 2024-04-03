@@ -2,6 +2,7 @@ import datetime
 from datetime import datetime as dt
 import json
 from os import environ
+import sys
 
 from utils.geo import getCoordinatesByName
 from blabla.carpooling import getTripsData
@@ -23,12 +24,15 @@ def scanFromTo(apiKey, seats, dateBegin, dateEnd, fromName, toName, radius):
     return getTripsData(apiKey, seats, fromName, toName, dateBegin, dateEnd, radius)
 
 
+cityFrom = len(sys.argv) > 2 and sys.argv[1] or 'Annecy'
+cityTo = len(sys.argv) > 2 and sys.argv[2] or 'Mulhouse'
+
 start = datetime.date.today() + datetime.timedelta(days=1)
 end = datetime.date.today() + datetime.timedelta(days=120)
 dateStart = '%d-%02d-%02d' % (start.year, start.month, start.day) + 'T00:00:00'
 dateEnd = '%d-%02d-%02d' % (end.year, end.month, end.day) + 'T23:59:59'
 
-trips = scanFromTo(apiKey, 1, dateStart, dateEnd, "Annecy", "Mulhouse", 5000)
+trips = scanFromTo(apiKey, 1, dateStart, dateEnd, cityFrom, cityTo, 5000)
 
 if len(trips) > 0:
     uri = dbKey
