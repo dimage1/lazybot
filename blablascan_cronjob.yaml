@@ -20,5 +20,4 @@ spec:
                 name: mongo-w-url
             - secretRef:
                 name: blabla-api-secret
-            command: ["python3", "blablascan.py"]
             args: ["Annecy", "Mulhouse"]
