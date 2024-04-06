@@ -5,6 +5,7 @@ metadata:
   name: blablascan-job
 
 spec:
+  backoffLimit: 5
   template:
     spec:
       restartPolicy: OnFailure
