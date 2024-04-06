@@ -1,0 +1,23 @@
+apiVersion: batch/v1
+kind: CronJob
+
+metadata:
+  name: blablascan-cronjob
+
+spec:
+  schedule: "0 * * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          restartPolicy: OnFailure
+          containers:
+          - name: blablascan
+            image: dimage1/blablascan:latest
+            envFrom:
+            - secretRef:
+                name: mongo-w-url
+            - secretRef:
+                name: blabla-api-secret
+            command: ["python3", "blablascan.py"]
+            args: ["Annecy", "Mulhouse"]

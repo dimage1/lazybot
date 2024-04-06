@@ -13,6 +13,8 @@ from bson.objectid import ObjectId
 
 apiKey = environ.get('blablaApiKey')
 dbKey = environ.get('dbKey')
+dbName = environ.get('dbName', "lazydbdev")
+dbCollection = "blablascan"
 
 def scanFromTo(apiKey, seats, dateBegin, dateEnd, fromName, toName, radius):
     fromName = getCoordinatesByName(fromName.lower())
@@ -26,6 +28,7 @@ def scanFromTo(apiKey, seats, dateBegin, dateEnd, fromName, toName, radius):
 
 cityFrom = len(sys.argv) > 2 and sys.argv[1] or 'Annecy'
 cityTo = len(sys.argv) > 2 and sys.argv[2] or 'Mulhouse'
+srcdst = cityFrom + '_' + cityTo
 
 start = datetime.date.today() + datetime.timedelta(days=1)
 end = datetime.date.today() + datetime.timedelta(days=120)
@@ -40,14 +43,15 @@ if len(trips) > 0:
 
     for t in trips:
         t['price']['amount'] = float(t['price']['amount'])
+        t['srcdst'] = srcdst
         #t['linkid'] = t['link'].split('id=')[1].split('&')[0]
 
-    query = {}#{"linkid": trips[0]['linkid']}#{'$in': [t['linkid'] for t in trips]}}
+    query = {"srcdst": srcdst}
     #newvalues = {"$set": trips}
     #mycol.update_many(query, newvalues)
 
-    mydb = client["lazydb"]
-    mycol = mydb["blablascan"]
+    mydb = client[dbName]
+    mycol = mydb[dbCollection]
 
     d = mycol.delete_many(query)
     i = mycol.insert_many(trips)
