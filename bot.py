@@ -108,7 +108,8 @@ def scanForDate(message, seats, dateBegin, dateEnd, fromCity, toCity, radius):
     datePrev = ''
 
     seatsStr = '웃' # '👤' '웃' '🧍' 🚶 #seats > 1 and 'seats' or 'seat'
-    direction = '🚗 *' + fromCity.replace('+', "\+").replace('-', "\-") + ' \- ' + toCity.replace('+', "\+").replace('-', "\-") + ' *\(*' + str(seats) + seatsStr + '*'
+    direction = '🚗 *' + fromCity.replace('+', "\+").replace('-', "\-") + ' \- ' + toCity.replace('+', "\+").replace('-', "\-") + 
+        ' *\(*' + str(seats) + seatsStr + '*'
 
     for d in data:
         dateCurrent, timeCurrent = d['waypoints'][0]['date_time'].split('T')
