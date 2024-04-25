@@ -1,0 +1,26 @@
+alias al=alias
+al ex=export
+al k=kubectl
+
+al kg='k get'
+al kgd='kg deploy '
+al kgp='kg pod '
+al kd='k describe '
+al kdd='kd deploy '
+al kdp='kd pod '
+al kdel='k delete --force --grace-period=0'
+al ka='k apply -f'
+al kc='k create'
+al kl='k logs'
+al krol='k rollout'
+al kcon='k config'
+al ktmp='k run tmp --rm -it --restart=Never $n --image=nginx:alpine --'
+al kurl='ktmp curl -m3 '
+al exn="ex n='-n"
+al fy="find /etc/ -name '*.yaml'"
+
+ex dry="--dry-run=client -oyaml"
+ex w="-owide"
+ex y="-oyaml"
+ex nh="--no-headers"
+ex sl="--show-labels"
