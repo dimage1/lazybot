@@ -22,7 +22,6 @@ metadata:
   labels:
     run: blablaweb
   name: blablaweb
-  namespace: default
 spec:
   ports:
   - port: 81

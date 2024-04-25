@@ -6,34 +6,142 @@
   <title>index</title>
 <!--link type="text/css"  href="cssfiles/mainpagecss.css" rel="stylesheet"-->
 <style media="screen" type="text/css">
-    table {
+    /*table {
         border-collapse: collapse;
     }
 
     table, th, td {
         border: 1px solid gray;
         padding: 3px; margin: 2px;
-    }
+    }*/
+
+    table { border: 1px solid #dfdfdf; border-collapse: collapse;  }
+    #react { display: block; height: 800px; overflow-y: scroll }
+    th { background-color: #efefef; text-align: left; text-transform: uppercase; }
+    td { border: 1px solid #efefef; }
+    td, th { padding: 0.4em; }
 </style>
 <script src="https://code.jquery.com/jquery-3.7.0.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/17.0.2/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/17.0.2/umd/react-dom.production.min.js"></script>
+<script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
 </head>
 <body>
 
 <div id="error"></div>
 
 <ol id="data"></ol>
-<script>
-    $( "#data" ).load( "/data", function( response, status, xhr ) {
-        if ( status == "error" ) {
-            var msg = "Sorry but there was an error: ";
-            $( "#error" ).html( msg + xhr.status + " " + xhr.statusText );
-        }
-        else {
-            alert(response);
-        }
+<script type="text/babel">
+    // `map` over the first object in the array
+// and get an array of keys and add them
+// to TH elements
+const formatHeading = (key) => {
+  if (typeof value === 'boolean') {
+    return value ? '✅' : '❌'
+  }
+
+  if (typeof value === 'string' && value.indexOf('http') >= 0) {
+    return <a class="pathlink" href={value}>link</a>;
+  }
+  if (key == 'distance_in_km') {
+    return 'KM';
+  }
+  if (key == 'duration_in_hours') {
+    return 'Hours';
+  }
+
+  return key;
+}
+
+function getHeadings(data) {
+  return Object.keys(data[0]).map(key => {
+    return <th>{formatHeading(key)}</th>;
+  });
+}
+
+// `map` over the data to return
+// row data, passing in each mapped object
+// to `getCells`
+function getRows(data) {
+  return data.map(obj => {
+    return <tr>{getCells(obj)}</tr>;
+  });
+}
+
+const formatEntry = (key, value) => {
+  if (typeof value === 'boolean') {
+    return value ? '✅' : '❌'
+  }
+
+  if (typeof value === 'string' && value.indexOf('http') >= 0) {
+    return <a class="pathlink" href={value}>link</a>;
+  }
+
+  if (key == 'path') {
+    const orig = value[0]['place']['latitude'] + ',' + value[0]['place']['longitude'];
+    const dest = value[1]['place']['latitude'] + ',' + value[1]['place']['longitude'];
+    return <a class='direction' origin={orig} destination={dest}>🔎</a>;
+  }
+
+  return value;
+}
+
+// Return an array of cell data using the
+// values of each object
+function getCells(obj) {
+  return Object.entries(obj).map(([key, value]) => {
+    return <td>{formatEntry(key, value)}</td>;
+  });
+}
+
+// Simple component that gets the
+// headers and then the rows
+function Example({ data }) {
+  return (
+    <table>
+      <thead>{getHeadings(data)}</thead>
+      <tbody>{getRows(data)}</tbody>
+    </table>
+  );
+}
+
+// Shorthand for $( document ).ready()
+$(function() {
+    $.getJSON( "/data", function( data ) {
+        ReactDOM.render(
+            <Example data={data} />,
+            document.getElementById('react')
+        );
+
+        $('.direction').click(function() {
+          const orig = $(this).attr('origin');
+          const dest = $(this).attr('destination');
+          $('#mapframe').attr("src", 
+            "https://www.google.com/maps/embed/v1/directions?key=AIzaSyAKd4Cb1nAF_icnYfOdSCSn4LWANggHzQQ" + 
+            "&origin=" + orig +
+            "&destination=" + dest);
+        });
     });
+});
 </script>
 
+<table  width="100%">
+<tr> 
+  <td><div id="react"></div></td>
+  <td valign="top" width="55%">
+    <iframe id="mapframe"
+      width="100%"
+      height="800px"
+      frameborder="0" style="border:0"
+      referrerpolicy="no-referrer-when-downgrade"
+      src="https://www.google.com/maps/embed/v1/directions?key=AIzaSyAKd4Cb1nAF_icnYfOdSCSn4LWANggHzQQ
+        &origin=Oslo+Norway
+        &destination=Telemark+Norway"
+      allowfullscreen>
+    </iframe>
+  </td>
+</tr>
+</table>
 
 </body>
 </html>

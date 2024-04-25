@@ -4,10 +4,13 @@ import json
 from os import environ
 import sys
 
-from bson import json_util
 from pymongo.mongo_client import MongoClient
 from pymongo.server_api import ServerApi
-from bottle import post, route, run, template, request, static_file, error, redirect
+from bottle import post, route, run, template, request, response, static_file, error, redirect
+
+# json float precision
+from json import encoder
+encoder.FLOAT_REPR = lambda o: format(o, '.2f')
 
 dbKey = environ.get('dbKey')
 dbName = environ.get('dbName', "lazydbdev")
@@ -20,16 +23,41 @@ mycol = mydb[dbCollection]
 
 @route('/')
 def index():
+    response.content_type = 'html'
     return template('show.html');
 
+'''
+"[{\"_id\": {\"$oid\": \"6610f6cc48bd4e9ce765c888\"}, 
+\"link\": \"https://www.blablacar.fr/trip?source=CARPOOLING&id=4POCp58VRoe_gRx5FVIxcQSNcR9rE6TpKcYrdyHnXKiQ\", 
+\"waypoints\": [{\"date_time\": \"2024-05-03T11:40:00\", 
+\"place\": {\"city\": \"Annecy\", \"address\": \"16 Av. de Chev\\u00e9ne, Annecy\", \"latitude\": 45.901199, \"longitude\": 6.117875, \"country_code\": \"FR\"}}, 
+{\"date_time\": \"2024-05-03T17:10:00\", \"place\": 
+{\"city\": \"Milan\", \"address\": \"Viale Alcide de Gasperi, 2, Milano MI\", \"latitude\": 45.488908, \"longitude\": 9.141483, \"country_code\": \"IT\"}}], 
+\"price\": {\"amount\": 41.49, \"currency\": \"EUR\"}, \"vehicle\": null, 
+\"distance_in_meters\": 351650, 
+\"duration_in_seconds\": 19800}, 
+
+
+'''
 @route('/data')
 def new():
-    res = '{'
+    response.content_type = 'application/json'
     x = mycol.find()
-    #for data in x:
-    #    res += str(data) + ','
+    res = []
+    for data in x:
+        dt = data['waypoints'][0]['date_time'].split('T')
+
+        #origin = str(data['waypoints'][0]['place']['latitude']) + ',' + str(data['waypoints'][0]['place']['longitude'])
+        #destination = str(data['waypoints'][-1]['place']['latitude']) + ',' + str(data['waypoints'][-1]['place']['longitude'])
+        res += [{'date': dt[0], 'time': dt[1], 'from': data['waypoints'][0]['place']['city'], 'to': data['waypoints'][1]['place']['city'],
+            #'origin': origin, 'destination': destination,
+            'path': data['waypoints'],
+            'price': data['price']['amount'], "distance_in_km": int(data['distance_in_meters'] / 1000), "duration_in_hours": round(float(data['duration_in_seconds']) / 3600, 1),
+            'link' : data['link'] }]
     #res += '}'
-    return json_util.dumps(x)
+    j = json.dumps(res)
+    print('send %d data' % len(j))
+    return j
 
 @error(404)
 def error404(error):
