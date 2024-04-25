@@ -54,3 +54,6 @@ def getCoordinatesByName(name):
         except Exception as e:
             print(e)
             return ''
+
+def getAllCoordinates():
+    return CITY_COORD

@@ -2,10 +2,10 @@ apiVersion: batch/v1
 kind: CronJob
 
 metadata:
-  name: blablascan-cronjob
+  name: blablascan-cron
 
 spec:
-  schedule: "0 * * * *"
+  schedule: "* */6 * * *"
   jobTemplate:
     spec:
       backoffLimit: 5
@@ -20,4 +20,4 @@ spec:
                 name: mongo-w-url
             - secretRef:
                 name: blabla-api-secret
-            args: ["Annecy", "Mulhouse"]
+            args: ["Annecy", "all"]
