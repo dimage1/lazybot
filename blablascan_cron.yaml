@@ -20,4 +20,4 @@ spec:
                 name: mongo-w-url
             - secretRef:
                 name: blabla-api-secret
-            args: ["Annecy", "all"]
+            args: ["Annecy", "basel,mulhouse,nice,avignon,marseille,turin,milan,bern,lausanne"]

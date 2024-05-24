@@ -27,7 +27,9 @@ def loadCityCoordinates():
         'barcelona': '41.3851,2.1734', 'nice': '43.7102,7.2620', 'le-grand-saconnex': '46.2332,6.1232', 'aeroport': '46.2332,6.1232', 'aero': '46.2332,6.1232', 'gva': '46.2332,6.1232', 'baar': '47.1954,8.5261',
         'bonneville': '46.0775797,6.4086189', 'mont-blanc': '45.8327056,6.865170', 'мон-блан' : '45.8327056,6.865170', 
         'питер':  '59.938732,30.316229', 'санкт-петербург':  '59.938732,30.316229', 'saint-petersburg':  '59.938732,30.316229',
-        'mulhouse': '47.7467233,7.3389937'}
+        'mulhouse': '47.7467233,7.3389937', "yekaterinburg": "56.839104,60.60825", "ekb": "56.839104,60.60825",
+        "rezh": "57.370647,61.4042865", "tagil": "57.905149,59.9508466", "nizhny-tagil": "57.905149,59.9508466",
+        "novouralsk": "57.247047,60.09581", "novour": "57.247047,60.09581"}
 
 
 
@@ -37,7 +39,7 @@ def getCoordinatesByName(name):
     try:
         return CITY_COORD[name.lower()]
     except Exception as e:
-        print(e)
+        print(str(e) + '. requesting ' + name.lower())
         url = "https://nominatim.openstreetmap.org/search?format=json&addressdetails=0&limit=1&q=" + name
 
         try:

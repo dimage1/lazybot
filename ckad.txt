@@ -1,0 +1,12 @@
+namespaces:
+kubectl config set-context --current --namespace=
+alias def='-ndefault'
+alias kcfgn='kubectl config set-context --current --namespace '
+kcfgn dev
+kcfgn default
+
+debug/ssh pod / node
+kubectl exec -it <pod-name> —- /bin/sh
+kubectl exec -it <pod-name> -c <container-name> —- /bin/sh
+kubectl debug node/<node-name> -it --image=<image name>
+k exec mazaipy-64894db676-dwtcv -i --tty -- bash

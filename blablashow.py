@@ -21,10 +21,15 @@ client = MongoClient(uri, server_api=ServerApi('1'))
 mydb = client[dbName]
 mycol = mydb[dbCollection]
 
-@route('/')
+@route('/search')
 def index():
     response.content_type = 'html'
     return template('show.html');
+
+@route('/')
+def index():
+    response.content_type = 'html'
+    return "<body><ul><li><a href='/search?fn=annecy'>Annecy</a></li><li><a href='/search?fn=ekb'>Ekb</a></li></ul></body>";
 
 '''
 "[{\"_id\": {\"$oid\": \"6610f6cc48bd4e9ce765c888\"}, 
@@ -42,14 +47,17 @@ def index():
 @route('/data')
 def new():
     response.content_type = 'application/json'
-    x = mycol.find()
+    src = request.query['fn'].lower()
+    x = src and mycol.find({"src": src}) or []
     res = []
     for data in x:
         dt = data['waypoints'][0]['date_time'].split('T')
+        tm = dt[1].split(':')
+        dt = dt[0].split('-')
 
         #origin = str(data['waypoints'][0]['place']['latitude']) + ',' + str(data['waypoints'][0]['place']['longitude'])
         #destination = str(data['waypoints'][-1]['place']['latitude']) + ',' + str(data['waypoints'][-1]['place']['longitude'])
-        res += [{'date': dt[0], 'time': dt[1], 'from': data['waypoints'][0]['place']['city'], 'to': data['waypoints'][1]['place']['city'],
+        res += [{'month': dt[1], 'day': dt[2], 'time': tm[0] + ':' + tm[1], 'from': data['waypoints'][0]['place']['city'], 'to': data['waypoints'][1]['place']['city'],
             #'origin': origin, 'destination': destination,
             'path': data['waypoints'],
             'price': data['price']['amount'], "distance_in_km": int(data['distance_in_meters'] / 1000), "duration_in_hours": round(float(data['duration_in_seconds']) / 3600, 1),

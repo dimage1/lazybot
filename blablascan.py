@@ -1,7 +1,8 @@
 import datetime
 from datetime import datetime as dt
+from time import sleep
 import json
-from os import environ
+import os
 import sys
 
 from utils.geo import getCoordinatesByName, getAllCoordinates
@@ -11,26 +12,34 @@ from pymongo.mongo_client import MongoClient
 from pymongo.server_api import ServerApi
 from bson.objectid import ObjectId
 
-apiKey = environ.get('blablaApiKey')
-dbKey = environ.get('dbKey')
-dbName = environ.get('dbName', "lazydbdev")
+from dotenv import load_dotenv
+
+load_dotenv()
+
+apiKey = os.getenv('blablaApiKey')
+dbKey = os.getenv('dbKey')
+dbName = os.getenv('dbName', "lazydbdev")
 dbCollection = "blablascan"
 
 def scanFromTo(apiKey, seats, dateBegin, dateEnd, fromName, toName, radius):
     fromName = getCoordinatesByName(fromName.lower())
     toName = getCoordinatesByName(toName.lower())
-    
-    if 'T' not in dateBegin:
-        dateBegin += 'T00:00:00'
-    
-    return getTripsData(apiKey, seats, fromName, toName, dateBegin, dateEnd, radius)
+
+    if fromName and toName:
+        if 'T' not in dateBegin:
+            dateBegin += 'T00:00:00'
+        
+        return getTripsData(apiKey, seats, fromName, toName, dateBegin, dateEnd, radius)
 
 
 cityFrom = len(sys.argv) > 2 and sys.argv[1] or 'Annecy'
 cityTo = len(sys.argv) > 2 and sys.argv[2] or 'Mulhouse'
 
-if cityTo == 'all':
-    citysTo = getAllCoordinates()
+#if cityTo == 'all':
+#    citysTo = getAllCoordinates()
+#else:
+if ',' in cityTo:
+    citysTo = cityTo.split(',')
 else:
     citysTo = [cityTo]
 
@@ -45,13 +54,16 @@ for cityTo in citysTo:
 
         trips = scanFromTo(apiKey, 1, dateStart, dateEnd, cityFrom, cityTo, 5000)
 
-        if len(trips) > 0:
+        if trips and len(trips) > 0:
             uri = dbKey
             client = MongoClient(uri, server_api=ServerApi('1'))
 
             for t in trips:
                 t['price']['amount'] = float(t['price']['amount'])
                 t['srcdst'] = srcdst
+                t['src'] = cityFrom
+                t['dst'] = cityTo
+                t['start_time'] = t['waypoints'][0]['date_time']
                 #t['linkid'] = t['link'].split('id=')[1].split('&')[0]
 
             query = {"srcdst": srcdst}
@@ -65,6 +77,7 @@ for cityTo in citysTo:
             i = mycol.insert_many(trips)
             print('deleted', d.deleted_count)
             print('inserted', len(i.inserted_ids))
+        sleep(0.1)
     except Exception as e:
         print(e)
     

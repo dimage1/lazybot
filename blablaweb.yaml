@@ -24,11 +24,12 @@ metadata:
   name: blablaweb
 spec:
   ports:
-  - port: 81
+  - port: 80
     protocol: TCP
     targetPort: 8080
   selector:
     run: blablaweb
   sessionAffinity: None
   type: LoadBalancer
+  loadBalancerIP: 34.23.85.62
 
