@@ -12,9 +12,8 @@ from pymongo.mongo_client import MongoClient
 from pymongo.server_api import ServerApi
 from bson.objectid import ObjectId
 
-from dotenv import load_dotenv
-
-load_dotenv()
+#from dotenv import load_dotenv
+#load_dotenv() 
 
 apiKey = os.getenv('blablaApiKey')
 dbKey = os.getenv('dbKey')

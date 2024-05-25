@@ -6,7 +6,7 @@
   <title>index</title>
 <!--link type="text/css"  href="cssfiles/mainpagecss.css" rel="stylesheet"-->
 <style media="screen" type="text/css">
-    table { border: 1px solid #dfdfdf; border-collapse: collapse;  }
+    table { border: 1px solid #dfdfdf; border-collapse: collapse;  font-size: 1.8rem;}
     #react { display: block; height: 800px; overflow-y: scroll }
     th { background-color: #efefef; text-align: left; text-transform: uppercase; }
     td { border: 1px solid #efefef; }
@@ -16,7 +16,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/react/17.0.2/umd/react.production.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/17.0.2/umd/react-dom.production.min.js"></script>
 <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
-<script src="rides.js" type="text/babel"></script>
+<<script src="rides.js" type="text/babel"></script>
 </head>
 <body>
 
@@ -32,13 +32,16 @@ $(function() {
 });
 </script>
 
+
 <table  width="100%">
 <tr> 
-  <td><div id="react"></div></td>
-  <td valign="top" width="70%">
+  <td height="800px"><div id="react"></div></td>
+</tr>
+<tr>
+  <td valign="top">
     <iframe id="mapframe"
       width="100%"
-      height="800px"
+      height="480px"
       frameborder="0" style="border:0"
       referrerpolicy="no-referrer-when-downgrade"
       allowfullscreen>

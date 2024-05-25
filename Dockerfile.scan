@@ -5,7 +5,7 @@ FROM python:3.9.13-slim-buster
 
 # create working directory and install pip dependencies
 WORKDIR /lazybot
-RUN pip install requests 
+RUN pip install requests python-dotenv
 RUN pip install pymongo[srv]
 
 # copy python project files from local to /lazybot image working directory

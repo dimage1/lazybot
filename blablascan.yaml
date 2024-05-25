@@ -2,19 +2,21 @@ apiVersion: batch/v1
 kind: CronJob
 
 metadata:
-  name: blablascan-cron
+  name: blablascan
 
 spec:
   schedule: "* */6 * * *"
   jobTemplate:
     spec:
       backoffLimit: 5
+      completions: 1
       template:
         spec:
           restartPolicy: OnFailure
           containers:
           - name: blablascan
-            image: dimage1/blablascan:latest
+            imagePullPolicy: Always
+            image: dimage1/blablascan:2505
             envFrom:
             - secretRef:
                 name: mongo-w-url

@@ -6,7 +6,7 @@ import sys
 
 from pymongo.mongo_client import MongoClient
 from pymongo.server_api import ServerApi
-from bottle import post, route, run, template, request, response, static_file, error, redirect
+from bottle import post, route, run, template, request, response, get, static_file, error, redirect
 
 # json float precision
 from json import encoder
@@ -24,7 +24,12 @@ mycol = mydb[dbCollection]
 @route('/search')
 def index():
     response.content_type = 'html'
-    return template('show.html');
+    agent = request.environ.get('HTTP_USER_AGENT')
+    if 'mobi' in agent or 'Mobi' in agent:
+        # mobile
+        return template('show.m.html');
+    else:
+        return template('show.html');
 
 @route('/')
 def index():
@@ -41,14 +46,24 @@ def index():
 \"price\": {\"amount\": 41.49, \"currency\": \"EUR\"}, \"vehicle\": null, 
 \"distance_in_meters\": 351650, 
 \"duration_in_seconds\": 19800}, 
-
-
 '''
+
+dates = {'01': 'Jan', '02': 'Feb', '03': 'Mar', '04': 'Apr', '05': 'May', '06': 'Jun', '07': 'Jul', '08': 'Aug', '09': 'Sep', '10': 'Oct', '11': 'Nov', '12': 'Dec'}
+
+@get("<filepath:re:.*\.js>")
+def js(filepath):
+    return static_file(filepath, root='')
+
 @route('/data')
 def new():
     response.content_type = 'application/json'
     src = request.query['fn'].lower()
-    x = src and mycol.find({"src": src}) or []
+    dst = request.query.get('tn', '').lower()
+    x = []
+    if src and dst:
+        x = mycol.find({"src": src, "dst": dst})
+    elif src:
+        x =  mycol.find({"src": src})
     res = []
     for data in x:
         dt = data['waypoints'][0]['date_time'].split('T')
@@ -57,10 +72,11 @@ def new():
 
         #origin = str(data['waypoints'][0]['place']['latitude']) + ',' + str(data['waypoints'][0]['place']['longitude'])
         #destination = str(data['waypoints'][-1]['place']['latitude']) + ',' + str(data['waypoints'][-1]['place']['longitude'])
-        res += [{'month': dt[1], 'day': dt[2], 'time': tm[0] + ':' + tm[1], 'from': data['waypoints'][0]['place']['city'], 'to': data['waypoints'][1]['place']['city'],
+        res += [{'Date': dt[2] + ' ' + dates[dt[1]], 'time': tm[0] + ':' + tm[1], 'from': data['waypoints'][0]['place']['city'], 'to': data['waypoints'][1]['place']['city'],
             #'origin': origin, 'destination': destination,
+            'price, €': data['price']['amount'], 
             'path': data['waypoints'],
-            'price': data['price']['amount'], "distance_in_km": int(data['distance_in_meters'] / 1000), "duration_in_hours": round(float(data['duration_in_seconds']) / 3600, 1),
+            #"distance_in_km": int(data['distance_in_meters'] / 1000), "duration_in_hours": round(float(data['duration_in_seconds']) / 3600, 1),
             'link' : data['link'] }]
     #res += '}'
     j = json.dumps(res)

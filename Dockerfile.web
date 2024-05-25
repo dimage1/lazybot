@@ -12,6 +12,8 @@ RUN pip install bottle
 # copy python project files from local to /lazybot image working directory
 COPY blablashow.py .
 COPY show.html .
+COPY show.m.html .
+COPY rides.js .
 
 # run server  
 ENTRYPOINT [ "python3", "blablashow.py"]
