@@ -25,7 +25,9 @@ MONTH_MAP={'январь':'01', 'янв':'01', 'ферваль':'02', 'фев':'
     'сент':'09', 'октябрь':'10', 'окт':'10', 'ноябрь':'11', 'нояб':'11', 'декабрь':'12', 'дек':'12', 'january':'01', 'jan':'01', 'february':'02', 'feb':'02', 'march':'03', 'mar':'03', 'april':'04', 'apr':'04',
     'may':'05', 'june':'06', 'july':'07', 'august':'08', 'aug':'08', 'september':'09', 'sept':'09', 'october':'10', 'oct':'10', 'november':'11', 'nov':'11', 'december':'12', 'dec':'12'}
 
-MONTH_MAP_REVERSE={'01': 'Jan', '02': 'Feb', '03': 'Mar', '04': 'Apr', '05': 'May', '06': 'Jun', '07': 'Jul', '08': 'Aug', '09': 'Sep', '10': 'Oct', '11': 'Nov', '12': 'Dec'}
+#MONTH_MAP_REVERSE={'01': 'Jan', '02': 'Feb', '03': 'Mar', '04': 'Apr', '05': 'May', '06': 'Jun', '07': 'Jul', '08': 'Aug', '09': 'Sep', '10': 'Oct', '11': 'Nov', '12': 'Dec'}
+MONTH_MAP_REVERSE={'01': 'Январь', '02': 'Февраль', '03': 'Март', '04': 'Апрель', '05': 'Май', '06': 'Июнь', '07': 'Июль', '08': 'Август', '09': 'Сентябрь', '10': 'Октябрь', '11': 'Ноябрь', '12': 'Декабрь'}
+DAYS_LIST=['Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота', 'Воскресенье']
 
 DAYS_IN_MONTH=[31, 29, 31, 30, 31, 30, 31, 31, 31, 30, 31, 30]
 
@@ -106,35 +108,63 @@ def scanForDate(message, seats, dateBegin, dateEnd, fromCity, toCity, radius):
     data = scanFromTo(apiKey, seats, dateBegin, dateEnd, fromCity, toCity, radius)
     infos = ''
     datePrev = ''
+    timeHoursPrev = ''
+    dateInfoShown = 0
 
-    seatsStr = '웃' # '👤' '웃' '🧍' 🚶 #seats > 1 and 'seats' or 'seat'
-    direction = '🚗 *' + fromCity.replace('+', "\+").replace('-', "\-") + ' \- ' + toCity.replace('+', "\+").replace('-', "\-") + 
-        ' *\(*' + str(seats) + seatsStr + '*'
+    seatsStr = '웃' # '👤' '웃' '🧍' 🚶 #seats > 1 and 'seats' or 'seat' € →
+    link = "https://www.blablacar.fr/search?fn=%s&tn=%s&db=%s&seats=%s&search_origin=HOME" % (fromCity, toCity, dateBegin.split('T')[0], seats) #-- .replace('+', "\+").replace('-', "\-") 
+    direction = ('🚗 %s - %s ⇒ [🔍](%s)' % (fromCity.upper(),  toCity.upper(), link)).replace('+', "\+").replace('-', "\-") #+ ' \(`' + str(seats) + seatsStr + '`'
+    # TODO: links works only for 1 day, not for a range -- need to add a separate link for each day
+    # https://www.blablacar.fr/search?fn=annecy&tn=Paris&db=2024-09-14&seats=1&search_origin=HOME
 
     for d in data:
         dateCurrent, timeCurrent = d['waypoints'][0]['date_time'].split('T')
         year, month, day = dateCurrent.split('-')
         month = MONTH_MAP_REVERSE[month]
+        timeFull = timeCurrent 
         timeCurrent = timeCurrent.split(':')
         distance = int(d['distance_in_meters']) // 1000
         duration = int(d['duration_in_seconds']) // 60
         minutes = duration % 60
         hours = duration / 60
+        timeHours = timeCurrent[0]
+
         if direction:
-            infos += (direction + ',' + str(distance) + 'km,' + ('%dh%02d' % (hours, minutes)) + '\)\n').replace('.', "\.")
+            infos += direction + '\n'
+            infos += ('`   %d км, %d:%02d ч`\n' % (distance, hours, minutes)).replace('.', "\.") # '🛤 %d км, ⏳ %d:%02d 
             direction = ''
-        dateInfo = '      '
         if dateCurrent != datePrev:
+            if timeHoursPrev:
+                infos += '\n'
+                timeHoursPrev = ''
+
             datePrev = dateCurrent
             #city = d['waypoints'][1]['place']['city']
             #infos += '*' + day + ' ' + month + direction + '*\n'#'__ 💡 *' + fromCity.replace('+', "\+") + ' \- ' + toCity.replace('+', "\+") + '*\n'
             #direction = ''
-            dateInfo = day + ' ' + month
-        amount = d['price']['amount'].split('.')[0]
-        infos += ('`%s` → [%s:%s](%s) - %s €\n' % (dateInfo, timeCurrent[0], timeCurrent[1], d['link'], amount)).replace('.', "\.").replace('-', "\-")
+            if dateInfoShown:
+                infos += '🗓 *%s*\n' % (day + ', ' + month)
+            else:
+                infos += '🗓 *%s*, ⏱ → €\n' % (day + ', ' + month)
+                dateInfoShown = 1
+        amount = int(round(float(d['price']['amount']), 0)) # € eg 1, 2, 6, 53 -- no decimals
+        if amount == 0:
+            amount = 1
+
+        link = d['link'] + "&timeFull=" + timeFull
+        if timeHours == timeHoursPrev:
+            infos += (' - [%s](%s)' % (amount, link)).replace('.', "\.").replace('-', "\-")
+        else:
+            if timeHoursPrev:
+                infos += '\n'
+            infos += ('`%s:%s` → [%s](%s)' % (timeCurrent[0], timeCurrent[1], amount, link)).replace('.', "\.").replace('-', "\-")
+            timeHoursPrev = timeHours
+
         if len(infos) > 3200:
             sendBack(message, infos)
             infos = ''
+            timeHoursPrev = ''
+            dateInfoShown = 0
 
     infos and sendBack(message, infos)
 

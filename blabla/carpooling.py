@@ -8,6 +8,8 @@ import copy
 
 API_URL = 'https://public-api.blablacar.com/api/v3/trips'
 
+# BUS ! -- url -H "Authorization: Token $API_KEY" -H "Content-Type: application/json" --compressed --data '{"origin_id":128, "destination_id":133, "date": "2024-09-15"}' https://bus-api.blablacar.com/v1/search
+
 def getTripsData(apiKey, seats, fromName, toName, dateBegin, dateEnd, radius=10000):
     headers = {'accept': 'application/json', 'key': apiKey} 
     params = {'from_coordinate': fromName, 'requested_seats': seats, 'to_coordinate': toName, 'start_date_local': dateBegin, 'count' : 100, 'sort': 'departure_datetime:asc', 'currency' : 'EUR'}
